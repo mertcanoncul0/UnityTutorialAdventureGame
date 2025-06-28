@@ -25,12 +25,11 @@ public class PlayerController : MonoBehaviour
 
     private float _damageCooldown;
 
-
-
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
         MoveAction.Enable();
+
         _currentHealth = _maxHealth;
     }
 
@@ -68,7 +67,7 @@ public class PlayerController : MonoBehaviour
         }
 
         _currentHealth = Mathf.Clamp(_currentHealth + amount, 0, _maxHealth);
-        Debug.Log(_currentHealth + "/" + _maxHealth);
+        UIHandler.instance.SetHealthValue(_currentHealth / (float)_maxHealth);
 
     }
 }
