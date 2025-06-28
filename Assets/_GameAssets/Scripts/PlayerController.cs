@@ -13,24 +13,40 @@ public class PlayerController : MonoBehaviour
 
 
     // Variables related to the health system
-    public int MaxHealth { get { return maxHealth; } }
-    [SerializeField] private int maxHealth = 5;
+    public int MaxHealth { get { return _maxHealth; } }
+    [SerializeField] private int _maxHealth = 5;
 
-    public int Health { get { return currentHealth; } }
-    private int currentHealth = 1;
+    public int Health { get { return _currentHealth; } }
+    private int _currentHealth = 1;
+
+    [SerializeField] private float _timeInvincible = 2.0f;
+
+    private bool _isInvincible;
+
+    private float _damageCooldown;
+
 
 
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
         MoveAction.Enable();
-        currentHealth = maxHealth;
+        _currentHealth = _maxHealth;
     }
 
     // Update is called once per frame
     void Update()
     {
         _move = MoveAction.ReadValue<Vector2>();
+
+        if (_isInvincible)
+        {
+            _damageCooldown -= Time.deltaTime;
+            if (_damageCooldown < 0)
+            {
+                _isInvincible = false;
+            }
+        }
     }
 
     void FixedUpdate()
@@ -41,7 +57,18 @@ public class PlayerController : MonoBehaviour
 
     public void ChangeHealth(int amount)
     {
-        currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
-        Debug.Log(currentHealth + "/" + maxHealth);
+        if (amount < 0)
+        {
+            if (_isInvincible)
+            {
+                return;
+            }
+            _isInvincible = true;
+            _damageCooldown = _timeInvincible;
+        }
+
+        _currentHealth = Mathf.Clamp(_currentHealth + amount, 0, _maxHealth);
+        Debug.Log(_currentHealth + "/" + _maxHealth);
+
     }
 }
